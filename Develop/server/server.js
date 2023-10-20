@@ -16,7 +16,7 @@ const server = new ApolloServer({
     cache: "bounded"  // Set cache to bounded
 });
 
-    await apolloServer.start();
+    await server.start();
     server.applyMiddleware({ app });
 
     app.use(express.urlencoded({ extended: true }));
