@@ -29,7 +29,7 @@ const startServer = async () => {
     return server; // Return the server instance if you need it outside
 };
 
-const server = startServer();
+const server = await startServer();
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/build')));
