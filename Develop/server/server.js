@@ -1,40 +1,41 @@
-// Import necessary modules
-const express = require('express'); // Express.js for server creation
-const path = require('path'); // Node.js path module for handling and transforming file paths
-const db = require('./config/connection'); // Database connection configuration
-const { ApolloServer } = require('apollo-server-express'); // ApolloServer, GraphQL server for Express.js
-const { typeDefs, resolvers } = require('./schemas'); // GraphQL schema - typeDefs and resolvers
+const express = require('express');
+const path = require('path');
+const db = require('./config/connection');
+const { ApolloServer } = require('apollo-server-express');
+const { typeDefs, resolvers } = require('./schemas');
+const { authMiddleware } = require('./utils/auth');
 
-// Initialize Express.js server
 const app = express();
-// Use environment defined port or 3001 if not defined
 const PORT = process.env.PORT || 3001;
 
-// Express.js middleware for parsing request body
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
-// Create an instance of ApolloServer
 const startServer = async () => {
     const server = new ApolloServer({
-      typeDefs,
-      resolvers,
-      context: authMiddleware
+        typeDefs,
+        resolvers,
+        context: authMiddleware,
+        persistedQueries: false  // Disable persisted queries
     });
-  
+
     await server.start();
     server.applyMiddleware({ app });
+
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
+
     console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
 
-    return server; // Return the server instance if you need it outside
+    // if we're in production, serve client/build as static assets
+    if (process.env.NODE_ENV === 'production') {
+        app.use(express.static(path.join(__dirname, '../client/build')));
+    }
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    });
+
+    db.once('open', () => {
+        app.listen(PORT, () => console.log(`🌍 API server running on port ${PORT}!`))
+    });
 };
 
-const server = await startServer();
-
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/build')));
-}
-
-db.once('open', () => {
-    app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}${server.graphqlPath}`));
-});
+startServer();
