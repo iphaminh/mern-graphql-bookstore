@@ -8,13 +8,14 @@ const { authMiddleware } = require('./utils/auth');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: authMiddleware,
-    persistedQueries: false,  // Disable persisted queries
-    cache: "bounded"  // Set cache to bounded
-});
+async function startServer() {
+    const server = new ApolloServer({
+        typeDefs,
+        resolvers,
+        context: authMiddleware,
+        persistedQueries: false,  // Disable persisted queries
+        cache: "bounded"  // Set cache to bounded
+    });
 
     await server.start();
     server.applyMiddleware({ app });
@@ -36,5 +37,6 @@ const server = new ApolloServer({
     db.once('open', () => {
         app.listen(PORT, () => console.log(`🌍 API server running on port ${PORT}!`))
     });
+}
 
 startServer();
