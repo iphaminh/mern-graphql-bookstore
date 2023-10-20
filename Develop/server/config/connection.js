@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const DB_URI = 'mongodb://localhost:27017/googlebooksDB';
+const connectionString = "mongodb+srv://minhmeoquay:SN1PqRsN7ZHCUBoy@cluster0.uzzmayw.mongodb.net/?retryWrites=true&w=majority";
 
-mongoose.connect(DB_URI, {
+mongoose.connect(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
