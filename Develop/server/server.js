@@ -18,11 +18,8 @@ const server = new ApolloServer({
 });
 
 const startApolloServer = async () => {
-  // Start the Apollo Server
-  await server.start();
-
-  // Apply the Apollo GraphQL middleware to our Express app, with path /graphql
-  server.applyMiddleware({ app, path: '/graphql' });
+    await server.start();
+    server.applyMiddleware({ app, path: '/graphql' });
 
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
