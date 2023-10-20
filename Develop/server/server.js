@@ -25,15 +25,17 @@ const server = new ApolloServer({
   },
 });
 
-// Apply Apollo middleware to Express.js server
-server.applyMiddleware({ app });
+// Ensure the server is started before applying middleware
+server.start().then(() => {
+  server.applyMiddleware({ app });
 
-// In a production environment, serve static assets from the build directory
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-}
+  // In a production environment, serve static assets from the build directory
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../client/build')));
+  }
 
-// Connect to the database and start the server
-db.once('open', () => {
-  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}${server.graphqlPath}`));
+  // Connect to the database and start the server
+  db.once('open', () => {
+    app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}${server.graphqlPath}`));
+  });
 });
