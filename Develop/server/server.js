@@ -18,10 +18,8 @@ async function startServer() {
     });
 
     await server.start();
-    apolloServer.applyMiddleware({
-        app,
-        cors: false
-      });
+    server.applyMiddleware({ app });
+
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
