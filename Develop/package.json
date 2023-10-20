@@ -1,7 +1,6 @@
 {
   "name": "googlebooks-app",
   "version": "1.0.0",
-  "description": "",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
@@ -18,5 +17,6 @@
   "dependencies": {
     "@apollo/client": "^3.8.6",
     "graphql": "^16.8.1"
-  }
+  },
+  "description": ""
 }
