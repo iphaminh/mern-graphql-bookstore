@@ -11,31 +11,30 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Express.js middleware for parsing request body
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Create an instance of ApolloServer
-const server = new ApolloServer({
-  typeDefs, // GraphQL schema to use
-  resolvers, // Resolver functions to handle GraphQL queries
-  context: ({ req }) => { // Context for GraphQL resolvers
-    return {
-      user: req.user, // Pass user info from the request object to the resolvers
-    };
-  },
-});
+const startServer = async () => {
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: authMiddleware
+    });
+  
+    await server.start();
+    server.applyMiddleware({ app });
+    console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
 
-// Ensure the server is started before applying middleware
-server.start().then(() => {
-  server.applyMiddleware({ app });
+    return server; // Return the server instance if you need it outside
+};
 
-  // In a production environment, serve static assets from the build directory
-  if (process.env.NODE_ENV === 'production') {
+const server = startServer();
+
+if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/build')));
-  }
+}
 
-  // Connect to the database and start the server
-  db.once('open', () => {
+db.once('open', () => {
     app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}${server.graphqlPath}`));
-  });
 });
