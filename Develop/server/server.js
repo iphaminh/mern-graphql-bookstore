@@ -20,7 +20,10 @@ async function startServer() {
     context: authMiddleware,
   });
 
+  // Wait for the server to start
   await server.start();
+
+  // Apply Apollo Server middleware
   server.applyMiddleware({ app });
 
   // if we're in production, serve client/build as static assets
